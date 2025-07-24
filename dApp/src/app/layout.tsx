@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { WagmiWrapper } from "@/providers/WagmiProvider";
-import '@rainbow-me/rainbowkit/styles.css'
-
+import { Toaster } from "react-hot-toast";
+import "@rainbow-me/rainbowkit/styles.css";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -30,7 +30,10 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <WagmiWrapper>{children}</WagmiWrapper>
+        <WagmiWrapper>
+          {children}
+          <Toaster position="bottom-right" />
+        </WagmiWrapper>
       </body>
     </html>
   );
