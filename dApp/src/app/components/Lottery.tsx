@@ -4,6 +4,7 @@ import { useLottery } from "@/hooks/useLottery";
 import { useAccount } from "wagmi";
 import { formatEther } from "viem";
 import { useState } from "react";
+import { formatEthValue } from "@/lib/formatEth";
 
 export function Lottery() {
   const {
@@ -16,6 +17,7 @@ export function Lottery() {
     enter,
     startLottery,
     selectWinner,
+    hasEntered,
   } = useLottery();
   const { isConnected } = useAccount();
   const [newEntryFee, setNewEntryFee] = useState("0.01");
@@ -29,7 +31,7 @@ export function Lottery() {
           <h2 className="text-xl font-semibold mb-2">Current Lottery</h2>
           <p>Lottery ID: {lotteryId?.toString()}</p>
           <p>Status: {isActive ? "Active" : "Inactive"}</p>
-          <p>Entry Fee: {entryFee ? formatEther(entryFee) : "0"} ETH</p>
+          <p>Entry Fee: {entryFee ? formatEthValue(entryFee) : "0"} ETH</p>
           <p>Prize Pool: {balance ? formatEther(balance) : "0"} ETH</p>
           <p>Players entered: {players?.length || 0}</p>
         </div>
@@ -45,7 +47,8 @@ export function Lottery() {
                   : "bg-gray-300 text-gray-500 cursor-not-allowed"
               }`}
             >
-              Enter Lottery ({entryFee ? formatEther(entryFee) : "0"} ETH)
+              {hasEntered ? "Already Entered" : "Enter Lottery"} (
+              {entryFee ? formatEther(entryFee) : "0"} ETH)
             </button>
 
             {isOwner && (
@@ -65,8 +68,7 @@ export function Lottery() {
                     />
                     <button
                       onClick={() => {
-                        const feeInWei = BigInt(Number(newEntryFee) * 10 ** 18);
-                        startLottery(feeInWei.toString()); 
+                        startLottery(newEntryFee);
                       }}
                       className="bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-md"
                     >

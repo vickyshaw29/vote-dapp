@@ -5,7 +5,7 @@ import {
   useWatchContractEvent,
 } from "wagmi";
 import { lotteryContract, publicClient } from "@/lib/contract";
-import { formatEther, type Address } from "viem";
+import { formatEther, parseEther, type Address } from "viem";
 import toast from "react-hot-toast";
 
 export function useLottery() {
@@ -42,7 +42,7 @@ export function useLottery() {
     functionName: "owner",
   });
 
-  // Write functions 
+  // Write functions
   const { writeContract: enterLottery } = useWriteContract();
   const { writeContract: startNewLottery } = useWriteContract();
   const { writeContract: pickWinner } = useWriteContract();
@@ -92,7 +92,8 @@ export function useLottery() {
 
     const toastId = toast.loading("Waiting for wallet confirmation...");
     try {
-      const hash = await new Promise<`0x${string}`>((resolve, reject) => {       // Getting the transaction hash from here
+      const hash = await new Promise<`0x${string}`>((resolve, reject) => {
+        // Getting the transaction hash from here
         enterLottery(
           {
             ...lotteryContract,
@@ -124,6 +125,8 @@ export function useLottery() {
   const startLottery = async (fee: string) => {
     const toastId = toast.loading("Waiting for wallet confirmation...");
     try {
+      const amount = parseEther(fee);
+      console.log({ amount });
       const hash = await new Promise<`0x${string}`>((resolve, reject) => {
         startNewLottery(
           {
@@ -184,6 +187,12 @@ export function useLottery() {
     }
   };
 
+  const { data: hasEntered } = useReadContract({
+    ...lotteryContract,
+    functionName: "hasEntered",
+    args: [address],
+  });
+
   return {
     isActive: isActive as boolean,
     entryFee: entryFee as bigint,
@@ -195,5 +204,6 @@ export function useLottery() {
     enter,
     startLottery,
     selectWinner,
+    hasEntered,
   };
 }
