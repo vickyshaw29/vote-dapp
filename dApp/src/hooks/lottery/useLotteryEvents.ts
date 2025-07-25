@@ -3,6 +3,7 @@ import { lotteryContract } from "@/lib/contract";
 import { formatEther } from "viem";
 import toast from "react-hot-toast";
 import { useQueryClient } from "@tanstack/react-query";
+import { formatAddress } from "@/lib/formatAddress";
 
 
 export function useLotteryEvents() {
@@ -15,14 +16,8 @@ export function useLotteryEvents() {
     onLogs: (logs) => {
       logs.forEach((log) => {
         const player = (log as any).args.player;
-
-        toast.success(`New player: ${player}`, {
-          style: {
-            minWidth: "300px",
-            maxWidth: "100%",
-            whiteSpace: "normal",
-          },
-        });
+        const formatted = formatAddress(player);
+        toast.success(`New player: ${formatted}`);
       });
     },
   });
@@ -34,14 +29,10 @@ export function useLotteryEvents() {
       logs.forEach((log) => {
         const winner = (log as any).args.winner;
         const amount = (log as any).args.amount;
+        const formattedWinner = formatAddress(winner);
         queryClient.invalidateQueries({ queryKey });
-        toast.success(`${winner} won ${formatEther(amount)} ETH!`, {
-          id: `winner-${winner}-${amount}`,
-          style: {
-            minWidth: "300px",
-            maxWidth: "100%",
-            whiteSpace: "normal",
-          },
+        toast.success(`${formattedWinner} won ${formatEther(amount)} ETH!`, {
+          id: `winner-${formattedWinner}-${amount}`,
           duration: 10000,
         });
       });

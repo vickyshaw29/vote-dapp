@@ -1,5 +1,6 @@
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
+import { useState, useTransition } from "react";
 
 type Props = {
   isActive: boolean;
@@ -16,6 +17,27 @@ export function AdminControls({
   startLottery,
   selectWinner,
 }: Props) {
+  const [isPending, startUITransition] = useTransition();
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleStart = () => {
+    setIsLoading(true);
+    startUITransition(() => {
+      Promise.resolve(startLottery(entryFee))
+        .catch(() => {})
+        .finally(() => setIsLoading(false));
+    });
+  };
+
+  const handlePickWinner = () => {
+    setIsLoading(true);
+    startUITransition(() => {
+      Promise.resolve(selectWinner())
+        .catch(() => {})
+        .finally(() => setIsLoading(false));
+    });
+  };
+
   return (
     <div className="space-y-4 p-4 rounded-lg">
       <h3 className="text-lg font-semibold">Admin Controls</h3>
@@ -32,20 +54,22 @@ export function AdminControls({
             placeholder="Entry fee in ETH"
           />
           <Button
-            onClick={() => startLottery(entryFee)}
+            onClick={handleStart}
             variant="outline"
             className="w-full sm:w-auto"
+            disabled={isLoading || isPending || !entryFee}
           >
-            Start Lottery
+            {isLoading || isPending ? "Starting..." : "Start Lottery"}
           </Button>
         </div>
       ) : (
         <Button
           variant="outline"
           className="w-full"
-          onClick={selectWinner}
+          disabled={isLoading || isPending}
+          onClick={handlePickWinner}
         >
-          Pick Winner
+          {isLoading || isPending ? "Picking Winner..." : "Pick Winner"}
         </Button>
       )}
     </div>

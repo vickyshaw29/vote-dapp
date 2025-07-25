@@ -1,3 +1,5 @@
+import { formatAddress } from "@/lib/formatAddress";
+
 type Props = {
   players: string[];
 };
@@ -9,7 +11,7 @@ export function PlayerList({ players }: Props) {
       <ul className="space-y-1">
         {players.map((player, index) => (
           <li key={index} className="text-sm font-mono">
-            {player}
+            {formatAddress(player, 6)}
           </li>
         ))}
       </ul>

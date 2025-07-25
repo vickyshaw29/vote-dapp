@@ -29,7 +29,7 @@ export default function RootLayout({
       >
         <WagmiWrapper>
           {children}
-          <Toaster position="bottom-right" />
+          <Toaster position="top-right" />
         </WagmiWrapper>
       </body>
     </html>
