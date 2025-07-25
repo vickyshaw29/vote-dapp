@@ -27,6 +27,7 @@ Here are the features of the lottery:
 - **UI Libraries:** shadcn/ui, Tailwind CSS
 - **Wallet Integration:** wagmi, viem, RainbowKit
 - **Data Fetching & Caching:** TanStack Query
+- **Responsive:** optimized for mobile and desktop experiences
 
 
 ## Environment Variables
