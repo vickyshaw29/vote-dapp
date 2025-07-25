@@ -1,0 +1,16 @@
+{
+  "name": "asvalabs",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "install-all": "cd dApp && npm install && cd ../smart-contracts && npm install",
+    "dapp:dev": "cd dApp && npm run dev",
+    "dapp:build": "cd dApp && npm run build",
+    "contracts:compile": "cd smart-contracts && npx hardhat compile",
+    "contracts:deploy": "cd smart-contracts && npx hardhat run scripts/deploy.ts --network sepolia"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
