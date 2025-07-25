@@ -4,6 +4,7 @@ import { formatEther } from "viem";
 import toast from "react-hot-toast";
 import { useQueryClient } from "@tanstack/react-query";
 
+
 export function useLotteryEvents() {
   const queryClient = useQueryClient();
   const queryKey = ["readContract", { scopeKey: "lottery" }];
@@ -61,7 +62,7 @@ export function useLotteryEvents() {
     eventName: "LotteryReset",
     onLogs: () => {
       queryClient.invalidateQueries({ queryKey });
-      toast("Lottery reset", { icon: "🔄" });
+      toast("Lottery reset", { icon: "✅" });
     },
   });
 }
