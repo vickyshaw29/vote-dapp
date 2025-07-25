@@ -7,6 +7,7 @@ contract CryptoLottery {
     bool public isActive;
     uint public entryFee;
     uint public lotteryId;
+    mapping(address => bool) public hasEntered;
 
     event LotteryStarted(uint lotteryId, uint entryFee);
     event PlayerEntered(address indexed player);
@@ -38,14 +39,20 @@ contract CryptoLottery {
 
     function enter() external payable lotteryActive {
         require(msg.value == entryFee, "Incorrect ETH sent");
+        require(!hasEntered[msg.sender], "Already entered this lottery");
         players.push(msg.sender);
+        hasEntered[msg.sender] = true;
         emit PlayerEntered(msg.sender);
     }
 
     function pickWinner() external onlyOwner lotteryActive {
         require(players.length > 0, "No players joined");
 
-        uint rand = uint(keccak256(abi.encodePacked(block.prevrandao, block.timestamp, players)));
+        uint rand = uint(
+            keccak256(
+                abi.encodePacked(block.prevrandao, block.timestamp, players)
+            )
+        );
         uint winnerIndex = rand % players.length;
         address winner = players[winnerIndex];
 
@@ -54,6 +61,11 @@ contract CryptoLottery {
 
         emit WinnerSelected(winner, prize);
         isActive = false;
+        // Reset hasEntered mapping for current players
+        for (uint i = 0; i < players.length; i++) {
+            delete hasEntered[players[i]];
+        }
+        delete players;
         lotteryId++;
         emit LotteryReset();
     }

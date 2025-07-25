@@ -2,97 +2,45 @@ import {
   useAccount,
   useReadContract,
   useWriteContract,
-  useWatchContractEvent,
 } from "wagmi";
 import { lotteryContract, publicClient } from "@/lib/contract";
-import { formatEther, type Address } from "viem";
+import { parseEther, type Address } from "viem";
 import toast from "react-hot-toast";
+import { useQueryClient } from "@tanstack/react-query";
+import { useLotteryEvents } from "./useLotteryEvents";
 
-export function useLottery() {
+export function useLotteryActions() {
   const { address } = useAccount();
+  const queryClient = useQueryClient();
+  const queryKey = ["readContract", { scopeKey: "lottery" }];
+  useLotteryEvents()
 
   // Read functions for the contract
-  const { data: isActive } = useReadContract({
+  const { data: isActive } = useReadContract({...lotteryContract,functionName: "isActive",scopeKey: "lottery"});
+  const { data: entryFee } = useReadContract({ ...lotteryContract,functionName: "entryFee",scopeKey: "lottery"});
+  const { data: lotteryId } = useReadContract({...lotteryContract,functionName: "lotteryId",scopeKey: "lottery"});
+  const { data: balance } = useReadContract({...lotteryContract,functionName: "getBalance",scopeKey: "lottery"});
+  const { data: players } = useReadContract({...lotteryContract,functionName: "getPlayers",scopeKey: "lottery"});
+  const { data: owner } = useReadContract({...lotteryContract,functionName: "owner",scopeKey: "lottery"});
+
+  const { data: hasEntered } = useReadContract({
     ...lotteryContract,
-    functionName: "isActive",
+    functionName: "hasEntered",
+    args: [address],
+    scopeKey: "lottery",
   });
 
-  const { data: entryFee } = useReadContract({
-    ...lotteryContract,
-    functionName: "entryFee",
-  });
-
-  const { data: lotteryId } = useReadContract({
-    ...lotteryContract,
-    functionName: "lotteryId",
-  });
-
-  const { data: balance } = useReadContract({
-    ...lotteryContract,
-    functionName: "getBalance",
-  });
-
-  const { data: players } = useReadContract({
-    ...lotteryContract,
-    functionName: "getPlayers",
-  });
-
-  const { data: owner } = useReadContract({
-    ...lotteryContract,
-    functionName: "owner",
-  });
-
-  // Write functions 
+  // Write functions
   const { writeContract: enterLottery } = useWriteContract();
   const { writeContract: startNewLottery } = useWriteContract();
   const { writeContract: pickWinner } = useWriteContract();
-
-  // listeners
-  useWatchContractEvent({
-    ...lotteryContract,
-    eventName: "PlayerEntered",
-    onLogs: (logs) => {
-      logs.forEach((log) => {
-        const player = (log as any).args.player;
-        toast.success(`New player: ${player}`);
-      });
-    },
-  });
-
-  useWatchContractEvent({
-    ...lotteryContract,
-    eventName: "WinnerSelected",
-    onLogs: (logs) => {
-      logs.forEach((log) => {
-        const winner = (log as any).args.winner;
-        const amount = (log as any).args.amount;
-        toast.success(`${winner} won ${formatEther(amount)} ETH!`);
-      });
-    },
-  });
-
-  useWatchContractEvent({
-    ...lotteryContract,
-    eventName: "LotteryStarted",
-    onLogs: () => {
-      toast.success("New lottery started!");
-    },
-  });
-
-  useWatchContractEvent({
-    ...lotteryContract,
-    eventName: "LotteryReset",
-    onLogs: () => {
-      toast("Lottery reset", { icon: "🔄" });
-    },
-  });
-
   const enter = async () => {
     if (!entryFee) return;
 
     const toastId = toast.loading("Waiting for wallet confirmation...");
     try {
-      const hash = await new Promise<`0x${string}`>((resolve, reject) => {       // Getting the transaction hash from here
+      const hash = await new Promise<`0x${string}`>((resolve, reject) => {
+        // Getting the transaction hash from here
         enterLottery(
           {
             ...lotteryContract,
@@ -108,8 +56,9 @@ export function useLottery() {
 
       toast.loading("Processing transaction...", { id: toastId });
       const receipt = await publicClient.waitForTransactionReceipt({ hash });
-
+      console.log({ receipt });
       if (receipt.status === "success") {
+        queryClient.invalidateQueries({ queryKey });
         toast.success("You're in!", { id: toastId });
       } else {
         toast.error("Transaction failed", { id: toastId });
@@ -124,6 +73,8 @@ export function useLottery() {
   const startLottery = async (fee: string) => {
     const toastId = toast.loading("Waiting for wallet confirmation...");
     try {
+      const amount = parseEther(fee);
+      console.log({ amount });
       const hash = await new Promise<`0x${string}`>((resolve, reject) => {
         startNewLottery(
           {
@@ -142,6 +93,7 @@ export function useLottery() {
       const receipt = await publicClient.waitForTransactionReceipt({ hash });
 
       if (receipt.status === "success") {
+        queryClient.invalidateQueries({ queryKey });
         toast.success("Lottery started!", { id: toastId });
       } else {
         toast.error("Transaction failed", { id: toastId });
@@ -171,8 +123,10 @@ export function useLottery() {
 
       toast.loading("Processing transaction...", { id: toastId });
       const receipt = await publicClient.waitForTransactionReceipt({ hash });
-
+      console.log({ receipt }, "receipt");
       if (receipt.status === "success") {
+        queryClient.invalidateQueries({ queryKey });
+
         toast.success("Winner selected!", { id: toastId });
       } else {
         toast.error("Transaction failed", { id: toastId });
@@ -195,5 +149,6 @@ export function useLottery() {
     enter,
     startLottery,
     selectWinner,
+    hasEntered,
   };
 }
