@@ -1,4 +1,4 @@
-import { createPublicClient, createWalletClient, http } from "viem";
+import { createPublicClient, http } from "viem";
 import { sepolia } from "wagmi/chains";
 import abi from '../../constants/abi.json'
 import { LOTTERY_CONTRACT_ADDRESS } from "../../constants/contract";

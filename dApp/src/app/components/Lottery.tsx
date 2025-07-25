@@ -7,6 +7,8 @@ import { LotteryInfo } from "./LotteryInfo";
 import { EntryButton } from "./EntryButton";
 import { AdminControls } from "./AdminControls";
 import { PlayerList } from "./PlayerList";
+import { WinnersList } from "./WinnersList";
+import { useLotteryWinners } from "@/hooks/lottery/useLotteryWinners";
 
 export function Lottery() {
   const {
@@ -22,6 +24,7 @@ export function Lottery() {
     hasEntered,
   } = useLotteryActions();
   const { isConnected } = useAccount();
+  const { formattedWinners } = useLotteryWinners();
   const [newEntryFee, setNewEntryFee] = useState("0.01");
 
   return (
@@ -58,6 +61,7 @@ export function Lottery() {
         )}
 
         {players && players.length > 0 && <PlayerList players={players} />}
+        {formattedWinners && formattedWinners?.length>0 && <WinnersList/>}
       </div>
     </div>
   );

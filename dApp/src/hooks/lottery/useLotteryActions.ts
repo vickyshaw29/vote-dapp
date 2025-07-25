@@ -15,7 +15,7 @@ export function useLotteryActions() {
   const queryKey = ["readContract", { scopeKey: "lottery" }];
   useLotteryEvents()
 
-  // Read functions for the contract
+  // (wagmi) Read functions for the contract
   const { data: isActive } = useReadContract({...lotteryContract,functionName: "isActive",scopeKey: "lottery"});
   const { data: entryFee } = useReadContract({ ...lotteryContract,functionName: "entryFee",scopeKey: "lottery"});
   const { data: lotteryId } = useReadContract({...lotteryContract,functionName: "lotteryId",scopeKey: "lottery"});
@@ -30,7 +30,7 @@ export function useLotteryActions() {
     scopeKey: "lottery",
   });
 
-  // Write functions
+  // Write functions(wagmi)
   const { writeContract: enterLottery } = useWriteContract();
   const { writeContract: startNewLottery } = useWriteContract();
   const { writeContract: pickWinner } = useWriteContract();
@@ -40,8 +40,7 @@ export function useLotteryActions() {
     const toastId = toast.loading("Waiting for wallet confirmation...");
     try {
       const hash = await new Promise<`0x${string}`>((resolve, reject) => {
-        // Getting the transaction hash from here
-        enterLottery(
+        enterLottery(  // Getting the transaction hash from here
           {
             ...lotteryContract,
             functionName: "enter",
