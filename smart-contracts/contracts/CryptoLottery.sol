@@ -61,6 +61,11 @@ contract CryptoLottery {
 
         emit WinnerSelected(winner, prize);
         isActive = false;
+        // Reset hasEntered mapping for current players
+        for (uint i = 0; i < players.length; i++) {
+            delete hasEntered[players[i]];
+        }
+        delete players;
         lotteryId++;
         emit LotteryReset();
     }

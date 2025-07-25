@@ -1,0 +1,18 @@
+type Props = {
+  players: string[];
+};
+
+export function PlayerList({ players }: Props) {
+  return (
+    <div className="p-4 bg-gray-50 rounded-lg">
+      <h3 className="text-lg font-semibold mb-2">Current Players</h3>
+      <ul className="space-y-1">
+        {players.map((player, index) => (
+          <li key={index} className="text-sm font-mono">
+            {player}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
