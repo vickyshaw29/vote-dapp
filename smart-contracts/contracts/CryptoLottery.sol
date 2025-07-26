@@ -9,10 +9,17 @@ contract CryptoLottery {
     uint public lotteryId;
     mapping(address => bool) public hasEntered;
 
+
     event LotteryStarted(uint lotteryId, uint entryFee);
     event PlayerEntered(address indexed player);
-    event WinnerSelected(address indexed winner, uint amount);
+    event WinnerSelected(
+        uint indexed lotteryId, 
+        address indexed winner, 
+        uint amount,
+        uint timestamp
+    );
     event LotteryReset();
+    
 
     modifier onlyOwner() {
         require(msg.sender == owner, "Not authorized");
@@ -59,7 +66,7 @@ contract CryptoLottery {
         uint prize = address(this).balance;
         payable(winner).transfer(prize);
 
-        emit WinnerSelected(winner, prize);
+        emit WinnerSelected(lotteryId, winner, prize, block.timestamp);
         isActive = false;
         // Reset hasEntered mapping for current players
         for (uint i = 0; i < players.length; i++) {
