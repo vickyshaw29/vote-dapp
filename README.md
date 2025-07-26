@@ -34,6 +34,9 @@ Here are the features of the lottery:
 
 To run this project, you will need to add the following environment variables to your .env.local file in dApp and a .env file in smart-contracts
 
+You can use `.env.local.example` and `.env.example` as references.
+
+
 ### DApp(.env.local)
 
 `NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID=YOUR_WALLETCONNECT_PROJECT_ID`
