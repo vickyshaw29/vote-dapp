@@ -1,5 +1,7 @@
 # Crypto Lottery dApp 
 
+<img width="1440" height="861" alt="Cypto_Lottery" src="https://github.com/user-attachments/assets/b20b7837-beee-4a60-9ec1-32897af842dd" />
+
 A complete decentralized lottery application that is built with Solidity and a modern React (Next.js) frontend. Users enter the lottery by sending ETH, and the owner of the lottery can draw a winner from the total prize pool.
 
 
